@@ -1,25 +1,21 @@
 import "@testing-library/jest-dom";
 import { render } from "@testing-library/react";
-import { Provider } from "react-redux";
-import store from "src/redux/store/store";
 import { describe, test } from "vitest";
 import { SoccerScore } from "./SoccerScore";
 
 describe("Soccer Score Component Testing Suite", () => {
 	test("Should show the scores on the screen", () => {
-		const { getByText } = render(
-			<Provider store={store}>
-				<SoccerScore />
-			</Provider>
-		);
+		const games = [
+			{
+				id: "ce23",
+				home_team: "Portugal",
+				home_score: 1,
+				away_team: "Morocco",
+				away_score: 1,
+			},
+		];
+		const { getByText } = render(<SoccerScore results={games} />);
 
-		expect(getByText("Austria")).toBeInTheDocument();
-		expect(getByText("Belgium")).toBeInTheDocument();
-		expect(getByText("Ukraine")).toBeInTheDocument();
-		expect(getByText("England")).toBeInTheDocument();
-		expect(getByText("Senegal")).toBeInTheDocument();
-		expect(getByText("South Africa")).toBeInTheDocument();
-		expect(getByText("Belarus")).toBeInTheDocument();
-		expect(getByText("Argentina")).toBeInTheDocument();
+		expect(getByText("Portugal : 1 - Morocco : 1")).toBeInTheDocument();
 	});
 });

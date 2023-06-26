@@ -1,28 +1,23 @@
-import React, { useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import React from "react";
 import { Game } from "src/types/types";
-import { get } from '../redux/games/games-slice';
 
-const SoccerScore: React.FC = () => {
-	const dispatch = useDispatch()
-	const games = useSelector((state: Game[]) => state);
-	
-	useEffect(() => {
-		dispatch(get())
-	}, [dispatch])
+
+type Props = {
+	results: Game[];
+}
+
+const SoccerScore: React.FC<Props> = ({results}) => {
+
 	return (
-		<>
-			{games.map((game) => {
+		<ul>
+			{results.map((result) => {
 				return (
-					<div>
-						<span>{game.home_team}</span>
-						<span>{game.home_score}</span>
-						<span>{game.away_team}</span>
-						<span>{game.away_score}</span>
-					</div>
+					<li key={result.id}>
+						<span>{`${result.home_team} : ${result.home_score} - ${result.away_team} : ${result.away_score}`}</span>
+					</li>
 				);
 			})}
-		</>
+		</ul>
 	);
 };
 

@@ -1,13 +1,13 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom/client";
-import { SoccerScore } from "./components/SoccerScore";
 import store from "../src/redux/store/store";
 import { Provider } from "react-redux";
+import App from "App";
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
 	<React.StrictMode>
 		<Provider store={store}>
-			<SoccerScore/>
+			<App/>
 		</Provider>
 	</React.StrictMode>
 );
