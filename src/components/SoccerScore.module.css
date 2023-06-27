@@ -1,0 +1,7 @@
+button {
+  display: none;
+}
+
+.gameListItem:hover > button {
+  display: inline-block;
+}
