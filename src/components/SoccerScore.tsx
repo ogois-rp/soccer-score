@@ -10,16 +10,27 @@ type Props = {
 const SoccerScore: React.FC<Props> = ({ results }) => {
 	const [games, setGames] = useState(results);
 	const [showForm, setShowForm] = useState(false);
+	const [showUpdateForm, setShowUpdateForm] = useState(false);
+	const [selectedGameId, setSelectedGameId] = useState("");
 
 	const handleStartGame = () => {
 		setShowForm(true);
 	};
 
-	const handleSubmit = (event: any) => {
+	const handleUpdateGame = (id: string) => {
+    setSelectedGameId(id);
+    setShowUpdateForm(true);
+  };
+
+	const handleAddSubmit = (event: any) => {
 		event.preventDefault();
 		const form = event.target as HTMLFormElement;
-		const homeTeamInput = form.elements.namedItem("homeTeam") as HTMLInputElement;
-		const awayTeamInput = form.elements.namedItem("awayTeam") as HTMLInputElement;
+		const homeTeamInput = form.elements.namedItem(
+			"homeTeam"
+		) as HTMLInputElement;
+		const awayTeamInput = form.elements.namedItem(
+			"awayTeam"
+		) as HTMLInputElement;
 
 		const newGame: Game = {
 			id: generateUniqueId(),
@@ -27,10 +38,10 @@ const SoccerScore: React.FC<Props> = ({ results }) => {
 			home_score: 0,
 			away_team: awayTeamInput.value,
 			away_score: 0,
-  };
+		};
 
-  setGames((prevGames) => [...prevGames, newGame]);
-  setShowForm(false);
+		setGames((prevGames) => [...prevGames, newGame]);
+		setShowForm(false);
 	};
 
 	const handleEndGame = (id: string) => {
@@ -41,15 +52,55 @@ const SoccerScore: React.FC<Props> = ({ results }) => {
 		});
 	};
 
+	const handleUpdateSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+		event.preventDefault();
+		const form = event.currentTarget;
+		const homeScoreInput = form.elements.namedItem(
+			"homeScore"
+		) as HTMLInputElement;
+		const awayScoreInput = form.elements.namedItem(
+			"awayScore"
+		) as HTMLInputElement;
+
+		const homeScore = +homeScoreInput.value;
+		const awayScore = +awayScoreInput.value;
+
+		setGames((prevGames) => {
+			return prevGames.map((game) => {
+				if (game.id === selectedGameId) {
+					return {
+						...game,
+						home_score: homeScore,
+						away_score: awayScore,
+					};
+				}
+				return game;
+			});
+		});
+
+		setSelectedGameId("");
+		setShowUpdateForm(false);
+	};
+
 	return (
 		<>
 			<div>
 				<button onClick={handleStartGame}>Start game</button>
 				{showForm && (
-					<form data-testid="add-game-form" onSubmit={handleSubmit}>
-						<input type="text" name="homeTeam" placeholder="Home team" required />
-						<input type="text" name="awayTeam" placeholder="Away team" required />
-						<button type="submit">Submit</button>
+					<form data-testid="add-game-form" onSubmit={handleAddSubmit}>
+						<input
+							type="text"
+							name="homeTeam"
+							placeholder="Home team"
+							required
+						/>
+						<input
+							type="text"
+							name="awayTeam"
+							placeholder="Away team"
+							required
+						/>
+						<button type="submit">Submit New Game</button>
 					</form>
 				)}
 			</div>
@@ -67,6 +118,37 @@ const SoccerScore: React.FC<Props> = ({ results }) => {
 							>
 								End Game
 							</button>
+							<button
+                className={styles.updateGameButton}
+                data-testid={`update-button-${result.id}`}
+                onClick={() => handleUpdateGame(result.id)}
+              >
+                Update Game
+              </button>
+							{showUpdateForm && selectedGameId === result.id && (
+								<form
+									data-testid={`update-form-${result.id}`}
+									onSubmit={handleUpdateSubmit}
+								>
+									<input
+										min="0"
+										type="number"
+										name="homeScore"
+										placeholder="Home score"
+										defaultValue={result.home_score}
+										required
+									/>
+									<input
+										min="0"
+										type="number"
+										name="awayScore"
+										placeholder="Away score"
+										defaultValue={result.away_score}
+										required
+									/>
+									<button type="submit">Submit Updated Game</button>
+								</form>
+							)}
 						</li>
 					);
 				})}

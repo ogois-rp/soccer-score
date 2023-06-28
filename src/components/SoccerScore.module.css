@@ -1,7 +1,9 @@
-.endGameButton {
-  display: none;
+.gameListItem:hover .endGameButton,
+.gameListItem:hover .updateGameButton {
+  display: inline-block;
 }
 
-.gameListItem:hover > .endGameButton {
-  display: inline-block;
+.endGameButton,
+.updateGameButton {
+  display: none;
 }
