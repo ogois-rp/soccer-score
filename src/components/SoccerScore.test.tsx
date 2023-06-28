@@ -97,4 +97,121 @@ describe("Soccer Score Component Testing Suite", () => {
     expect(awayInput).toBeInTheDocument();
     expect(submitButton).toBeInTheDocument();
   });
+
+  test("Submitting the form with all empty inputs prevents submission", () => {
+    const games = [
+      {
+        id: "ce23",
+        home_team: "Portugal",
+        home_score: 1,
+        away_team: "Morocco",
+        away_score: 1,
+      },
+      {
+        id: "ce1223",
+        home_team: "Argentina",
+        home_score: 1,
+        away_team: "Morocco",
+        away_score: 1,
+      },
+    ];
+  
+    render(<SoccerScore results={games} />);
+    
+    const startGameButton = screen.getByText("Start game");
+    fireEvent.click(startGameButton);
+    const formElement = screen.queryByTestId("add-game-form");
+    
+    const homeInput = screen.getByPlaceholderText("Home team");
+    const awayInput = screen.getByPlaceholderText("Away team");
+    
+    const submitButton = screen.getByText("Submit");
+    
+    fireEvent.click(submitButton);
+    
+    expect(homeInput).toBeInvalid()
+    expect(awayInput).toBeInvalid()
+    expect(formElement).toBeInTheDocument()
+  });
+
+  test("Submitting the form with one empty input prevents submission", () => {
+    
+    const games = [
+      {
+        id: "ce23",
+        home_team: "Portugal",
+        home_score: 1,
+        away_team: "Morocco",
+        away_score: 1,
+      },
+      {
+        id: "ce1223",
+        home_team: "Argentina",
+        home_score: 1,
+        away_team: "Morocco",
+        away_score: 1,
+      },
+    ];
+  
+    render(<SoccerScore results={games} />);
+    
+    const startGameButton = screen.getByText("Start game");
+    fireEvent.click(startGameButton);
+    
+    const formElement = screen.queryByTestId("add-game-form")
+    const homeInput = screen.getByPlaceholderText("Home team");
+    const awayInput = screen.getByPlaceholderText("Away team");
+    const submitButton = screen.getByText("Submit");
+    
+    fireEvent.input(homeInput, { target: { value: "Argelia" } });
+
+    fireEvent.click(submitButton);
+    
+    expect(homeInput).toBeValid()
+    expect(awayInput).toBeInvalid()
+
+     // Assuming you have a data-testid attribute on your form element
+
+    expect(formElement).toBeInTheDocument();
+  });
+
+  test("Submitting the form both inputs complete adds a new game and closes the form", () => {
+    
+    const games = [
+      {
+        id: "ce23",
+        home_team: "Portugal",
+        home_score: 1,
+        away_team: "Morocco",
+        away_score: 1,
+      },
+      {
+        id: "ce1223",
+        home_team: "Argentina",
+        home_score: 1,
+        away_team: "Morocco",
+        away_score: 1,
+      },
+    ];
+  
+    const {getByText } = render(<SoccerScore results={games} />);
+    
+    const startGameButton = screen.getByText("Start game");
+    fireEvent.click(startGameButton);
+    
+    const formElement = screen.queryByTestId("add-game-form")
+    const homeInput = screen.getByPlaceholderText("Home team");
+    const awayInput = screen.getByPlaceholderText("Away team");
+    const submitButton = screen.getByText("Submit");
+    
+    fireEvent.input(homeInput, { target: { value: "Argelia" } });
+    fireEvent.input(awayInput, { target: { value: "Paraguai" } });
+
+    fireEvent.click(submitButton);
+    
+    expect(getByText("Argelia : 0 - Paraguai : 0")).toBeInTheDocument();
+     // Assuming you have a data-testid attribute on your form element
+
+    expect(formElement).not.toBeInTheDocument();
+  });
 })
