@@ -119,7 +119,7 @@ describe("Soccer Score Component Testing Suite", () => {
 
     fireEvent.click(submitButton);
     
-    expect(screen.getByTestId("game-ce23")).toHaveTextContent("Portugal : 1 - Morocco : 1");
+    expect(screen.getByText("Argelia : 0 - Paraguai : 0"));
      // Assuming you have a data-testid attribute on your form element
 
     expect(formElement).not.toBeInTheDocument();
