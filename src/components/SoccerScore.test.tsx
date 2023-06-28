@@ -82,4 +82,19 @@ describe("Soccer Score Component Testing Suite", () => {
     // Verify the game with ID 'ce1223' is still in the document
     expect(screen.getByTestId("game-ce1223")).toBeInTheDocument();
   })
+
+  test("Clicking 'Start game' button displays two form inputs and a submit button", () => {
+    render(<SoccerScore results={[]} />);
+  
+    const startGameButton = screen.getByText("Start game");
+    fireEvent.click(startGameButton);
+  
+    const homeInput = screen.getByPlaceholderText("Home team");
+    const awayInput = screen.getByPlaceholderText("Away team");
+    const submitButton = screen.getByText("Submit");
+  
+    expect(homeInput).toBeInTheDocument();
+    expect(awayInput).toBeInTheDocument();
+    expect(submitButton).toBeInTheDocument();
+  });
 })
