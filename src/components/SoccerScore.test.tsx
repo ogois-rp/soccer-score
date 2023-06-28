@@ -48,4 +48,38 @@ describe("Soccer Score Component Testing Suite", () => {
 
     expect(buttonElement).toHaveStyle("display: inline-block");
 	});
+
+  test("Clicking 'End Game' should remove the game from the screen", () => {
+    const games = [
+      {
+        id: "ce23",
+        home_team: "Portugal",
+        home_score: 1,
+        away_team: "Morocco",
+        away_score: 1,
+      },
+      {
+        id: "ce1223",
+        home_team: "Argentina",
+        home_score: 1,
+        away_team: "Morocco",
+        away_score: 1,
+      },
+    ];
+  
+    render(<SoccerScore results={games} />);
+  
+    // Verify the initial rendering
+    expect(screen.getByTestId("game-ce23")).toBeInTheDocument();
+    expect(screen.getByTestId("game-ce1223")).toBeInTheDocument();
+  
+    // Trigger a click on the 'End Game' button
+    const buttonElement = screen.getByTestId("button-ce23");
+    fireEvent.click(buttonElement);
+  
+    // Verify the game with ID 'ce23' is no longer in the document
+    expect(screen.queryByTestId("game-ce23")).not.toBeInTheDocument();
+    // Verify the game with ID 'ce1223' is still in the document
+    expect(screen.getByTestId("game-ce1223")).toBeInTheDocument();
+  })
 })
