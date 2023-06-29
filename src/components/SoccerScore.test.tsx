@@ -274,4 +274,85 @@ describe("Soccer Score Component Testing Suite", () => {
     expect(formElement).not.toBeInTheDocument()
     expect(screen.getByTestId("game-ce23")).toHaveTextContent("Portugal : 3 - Morocco : 2");
   });
+
+  test("'Summary' button should be on dom", () => {
+    const summaryButton = screen.getByText("Show Summary");
+
+    expect(summaryButton).toBeInTheDocument();
+  });
+
+  test("'Summary' button click displays the games", () => {
+    const summaryButton = screen.getByText("Show Summary");
+    fireEvent.click(summaryButton);
+
+    const gameOne = screen.getByTestId("game-heading-ce23");
+    const gameTwo = screen.getByTestId("game-heading-ce1223")
+    expect(gameOne).toBeInTheDocument();
+    expect(gameTwo).toBeInTheDocument();
+    expect(gameOne).toHaveTextContent("Portugal - 1 : Morocco - 1");
+    expect(gameTwo).toHaveTextContent("Argentina - 1 : Morocco - 1");
+  });
+
+  test("'Summary'second button click hides the games", () => {
+    const summaryButton = screen.getByText("Show Summary");
+    fireEvent.click(summaryButton);
+
+    const gameOne = screen.getByTestId("game-heading-ce23");
+    const gameTwo = screen.getByTestId("game-heading-ce1223")
+    expect(gameOne).toBeInTheDocument();
+    expect(gameTwo).toBeInTheDocument();
+    expect(gameOne).toHaveTextContent("Portugal - 1 : Morocco - 1");
+    expect(gameTwo).toHaveTextContent("Argentina - 1 : Morocco - 1");
+
+    fireEvent.click(summaryButton);
+
+    expect(gameOne).not.toBeInTheDocument();
+    expect(gameTwo).not.toBeInTheDocument();
+  });
+
+  test("'Summary' click should show the games in correct order", () => {
+    expect(screen.getByTestId("game-ce23")).toBeInTheDocument();
+    expect(screen.getByTestId("game-ce1223")).toBeInTheDocument();
+
+    const buttonElementToDel1 = screen.getByTestId("button-ce23");
+    fireEvent.click(buttonElementToDel1);
+    
+    const buttonElementToDel2 = screen.getByTestId("button-ce1223");
+    fireEvent.click(buttonElementToDel2);
+  
+    // Trigger a click on the 'End Game' button
+
+    const startGameButton = screen.getByText("Start game");
+    fireEvent.click(startGameButton);
+        
+    let homeInput = screen.getByPlaceholderText("Home team");
+    let awayInput = screen.getByPlaceholderText("Away team");
+    let submitButton = screen.getByText("Submit New Game");
+    
+    fireEvent.input(homeInput, { target: { value: "Argelia" } });
+    fireEvent.input(awayInput, { target: { value: "Paraguai" } });
+
+    fireEvent.click(submitButton);
+    fireEvent.click(startGameButton);
+
+    homeInput = screen.getByPlaceholderText("Home team");
+    awayInput = screen.getByPlaceholderText("Away team");
+    submitButton = screen.getByText("Submit New Game");
+    
+    fireEvent.input(homeInput, { target: { value: "Mali" } });
+    fireEvent.input(awayInput, { target: { value: "Cameroon" } });
+    fireEvent.click(submitButton);
+
+    const summaryButton = screen.getByText("Show Summary");
+    fireEvent.click(summaryButton);
+
+    const element1 = screen.getByText("Argelia - 0 : Paraguai - 0");
+    const element2 = screen.getByText("Mali - 0 : Cameroon - 0");
+    
+
+    expect(element1).toBeInTheDocument();
+    expect(element2).toBeInTheDocument();
+
+    expect(element2.compareDocumentPosition(element1)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+  });
 })

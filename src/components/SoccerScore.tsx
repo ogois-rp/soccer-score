@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Game } from "src/types/types";
 import styles from "./SoccerScore.module.css";
 import { generateUniqueId } from "./../utils/uniqueId";
@@ -8,8 +8,10 @@ type Props = {
 };
 
 const SoccerScore: React.FC<Props> = ({ results }) => {
-	const [games, setGames] = useState(results);
+	const [games, setGames] = useState<Game[]>(results);
+	const [sortedGames, setSortedGames] = useState<Game[]>([]);
 	const [showForm, setShowForm] = useState(false);
+	const [showSummary, setShowSummary] = useState(false);
 	const [showUpdateForm, setShowUpdateForm] = useState(false);
 	const [selectedGameId, setSelectedGameId] = useState("");
 
@@ -17,10 +19,14 @@ const SoccerScore: React.FC<Props> = ({ results }) => {
 		setShowForm(true);
 	};
 
+	const handleShowSummary = () => {
+		setShowSummary(!showSummary);
+	};
+
 	const handleUpdateGame = (id: string) => {
-    setSelectedGameId(id);
-    setShowUpdateForm(true);
-  };
+		setSelectedGameId(id);
+		setShowUpdateForm(true);
+	};
 
 	const handleAddSubmit = (event: any) => {
 		event.preventDefault();
@@ -82,10 +88,25 @@ const SoccerScore: React.FC<Props> = ({ results }) => {
 		setShowUpdateForm(false);
 	};
 
+	useEffect(() => {
+		const sortedCopy = [...games].sort((a, b) => {
+			const totalScoreDiff =
+				b.home_score + b.away_score - (a.home_score + a.away_score);
+			if (totalScoreDiff !== 0) {
+				return totalScoreDiff;
+			} else {
+				return games.indexOf(b) - games.indexOf(a);
+			}
+		});
+
+		setSortedGames(sortedCopy);
+	}, [games]);
+
 	return (
 		<>
 			<div>
 				<button onClick={handleStartGame}>Start game</button>
+				<button onClick={handleShowSummary}>Show Summary</button>
 				{showForm && (
 					<form data-testid="add-game-form" onSubmit={handleAddSubmit}>
 						<input
@@ -119,12 +140,12 @@ const SoccerScore: React.FC<Props> = ({ results }) => {
 								End Game
 							</button>
 							<button
-                className={styles.updateGameButton}
-                data-testid={`update-button-${result.id}`}
-                onClick={() => handleUpdateGame(result.id)}
-              >
-                Update Game
-              </button>
+								className={styles.updateGameButton}
+								data-testid={`update-button-${result.id}`}
+								onClick={() => handleUpdateGame(result.id)}
+							>
+								Update Game
+							</button>
 							{showUpdateForm && selectedGameId === result.id && (
 								<form
 									data-testid={`update-form-${result.id}`}
@@ -153,6 +174,14 @@ const SoccerScore: React.FC<Props> = ({ results }) => {
 					);
 				})}
 			</ul>
+			{showSummary &&
+				sortedGames.map((game) => {
+					return (
+						<h1 key={`key-${game.id}`} data-testid={`game-heading-${game.id}`}>
+							{`${game.home_team} - ${game.home_score} : ${game.away_team} - ${game.away_score}`}
+						</h1>
+					);
+				})}
 		</>
 	);
 };
